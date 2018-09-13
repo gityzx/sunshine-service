@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import static com.sunshine.service.java.netty.Constant.close;
-import static com.sunshine.service.java.netty.Constant.process;
+import static com.sunshine.service.java.netty.utils.CloseUtils.close;
+import static com.sunshine.service.java.netty.utils.ProcessUtils.process;
 
 /**
  * @Description:

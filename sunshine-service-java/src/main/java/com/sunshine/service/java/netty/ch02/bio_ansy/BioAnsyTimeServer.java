@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static com.sunshine.service.java.netty.Constant.PORT;
-import static com.sunshine.service.java.netty.Constant.close;
+import static com.sunshine.service.java.netty.utils.CloseUtils.close;
+import static com.sunshine.service.java.netty.utils.Constant.PORT;
 
 /**
  * @Description:
