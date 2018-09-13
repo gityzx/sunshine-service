@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
@@ -70,6 +71,19 @@ public class CloseUtils {
             }
         }
     }
+
+
+    public static void close(AsynchronousSocketChannel channel) {
+        if (channel != null) {
+            try {
+                System.out.println("The Time Server Close!");
+                channel.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public static void close(SelectionKey key) {
         if (key != null) {
