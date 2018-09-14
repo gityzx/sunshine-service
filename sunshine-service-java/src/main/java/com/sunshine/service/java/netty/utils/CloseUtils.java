@@ -1,5 +1,7 @@
 package com.sunshine.service.java.netty.utils;
 
+import io.netty.channel.EventLoopGroup;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -109,6 +111,22 @@ public class CloseUtils {
             }
 
         }
+    }
+
+
+    public static void close(EventLoopGroup... groups) {
+        //优雅关闭释放资源
+        for (EventLoopGroup g : groups) {
+            if (g != null) {
+                try {
+                    g.shutdownGracefully();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
     }
 
 }
