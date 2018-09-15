@@ -1,4 +1,4 @@
-package com.sunshine.service.java.netty.ch04.stickyloss;
+package com.sunshine.service.java.netty.ch04.sticklossOK;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -8,16 +8,19 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
 
 import static com.sunshine.service.java.netty.utils.CloseUtils.close;
 import static com.sunshine.service.java.netty.utils.Constant.PORT;
 
 /**
- * @Description: 有粘包问题的服务端
- * @Date: 2018/9/14 07:46
+ * @Description: 没有粘包问题的服务端
+ * @Date: 2018/9/15 10:56
  * @Auther: yangzhaoxu
  */
-public class TimeServer {
+public class Server {
+
 
     public ServerBootstrap initServerBootstrap(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
         ServerBootstrap b = new ServerBootstrap();
@@ -30,9 +33,11 @@ public class TimeServer {
                     public void initChannel(SocketChannel ch) throws Exception {
 
                         /**
-                         * 有tcp粘包和拆包的情况
+                         * 解决了tcp粘包和拆包的情况
                          */
-                        ch.pipeline().addLast(new StickylossServerHandler());
+                        ch.pipeline().addLast(new LineBasedFrameDecoder(1024));//按行切换的文本解码器
+                        ch.pipeline().addLast(new StringDecoder());
+                        ch.pipeline().addLast(new StickylossOKServerHandler());
                     }
                 });
         return b;
@@ -47,7 +52,7 @@ public class TimeServer {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         // 配置ServerBootstrap
-        ServerBootstrap b = new TimeServer().initServerBootstrap(bossGroup, workerGroup);
+        ServerBootstrap b = new Server().initServerBootstrap(bossGroup, workerGroup);
 
         try {
 

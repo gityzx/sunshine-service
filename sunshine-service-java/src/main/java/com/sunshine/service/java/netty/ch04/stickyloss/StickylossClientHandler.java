@@ -11,28 +11,37 @@ import io.netty.channel.ChannelHandlerContext;
  * @Date: 2018/9/14 08:43
  * @Auther: yangzhaoxu
  */
-public class TimeClientHandler extends ChannelHandlerAdapter {
-    private ByteBuf firstMessage = null;
+public class StickylossClientHandler extends ChannelHandlerAdapter {
 
-    public TimeClientHandler() {
-        byte[] req = Constant.QUERY_TIME_ORDER.getBytes();
-        this.firstMessage = Unpooled.buffer(req.length);
-        this.firstMessage.writeBytes(req);
-    }
+    private int ackCount = 0;
 
 
     /**
      * 当客户端和服务端TCP链路建立成功后,Netty NIO 线程会调用channelActive方法来发送命令
+     *
      * @param ctx
      * @throws Exception
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        ctx.writeAndFlush(this.firstMessage);
+
+        //将数据序列化成字节数组
+        byte[] req = (Constant.QUERY_TIME_ORDER).getBytes();
+
+        // 循环100次
+        for (int i = 0; i < 100; i++) {
+            //字节数组-->缓存
+            ByteBuf buffer = Unpooled.buffer(req.length);
+            buffer.writeBytes(req);
+
+            // 缓存-->网络
+            ctx.writeAndFlush(buffer);
+        }
     }
 
     /**
      * 当服务器返回应答消息时,会调用channelRead方法
+     *
      * @param ctx
      * @param msg
      * @throws Exception
@@ -49,7 +58,8 @@ public class TimeClientHandler extends ChannelHandlerAdapter {
         // 字节数组(内存)-->反序列化成Object(内存)
         String body = new String(req, "UTF-8");
 
-        System.out.println("当前时间是:" + body);
+        // 理论上来说ackCount也是100才对
+        System.out.println("当前时间是:" + body + ",客户端收到ACK的数量为:" + (++ackCount));
 
     }
 

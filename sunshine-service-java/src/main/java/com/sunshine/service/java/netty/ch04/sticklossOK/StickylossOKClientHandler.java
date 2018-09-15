@@ -1,4 +1,4 @@
-package com.sunshine.service.java.netty.ch03;
+package com.sunshine.service.java.netty.ch04.sticklossOK;
 
 import com.sunshine.service.java.netty.utils.Constant;
 import io.netty.buffer.ByteBuf;
@@ -11,7 +11,13 @@ import io.netty.channel.ChannelHandlerContext;
  * @Date: 2018/9/14 08:43
  * @Auther: yangzhaoxu
  */
-public class TimeClientHandler extends ChannelHandlerAdapter {
+public class StickylossOKClientHandler extends ChannelHandlerAdapter {
+    public static String lineSepatator = System.getProperty("line.separator");
+    private int ackCount = 0;
+
+    public StickylossOKClientHandler() {
+        System.out.println("line.separator:" + lineSepatator);
+    }
 
 
     /**
@@ -22,13 +28,19 @@ public class TimeClientHandler extends ChannelHandlerAdapter {
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        //将数据序列化成字节数组
-        byte[] req = Constant.QUERY_TIME_ORDER.getBytes();
 
-        //将字节数组写入缓存中
-        ByteBuf firstMessage = Unpooled.buffer(req.length);
-        firstMessage.writeBytes(req);
-        ctx.writeAndFlush(firstMessage);
+        //将数据序列化成字节数组
+        byte[] req = (Constant.QUERY_TIME_ORDER + lineSepatator).getBytes();
+
+        // 循环100次
+        for (int i = 0; i < 100; i++) {
+            //字节数组-->缓存
+            ByteBuf buffer = Unpooled.buffer(req.length);
+            buffer.writeBytes(req);
+
+            // 缓存-->网络
+            ctx.writeAndFlush(buffer);
+        }
     }
 
     /**
@@ -40,17 +52,12 @@ public class TimeClientHandler extends ChannelHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // 网络管道-->缓存区(内存)
-        ByteBuf buf = (ByteBuf) msg;
-        byte[] req = new byte[buf.readableBytes()];
-
-        // 缓存区(内存)-->字节数组(内存)
-        buf.readBytes(req);
-
-        // 字节数组(内存)-->反序列化成Object(内存)
-        String body = new String(req, "UTF-8");
-
-        System.out.println("当前时间是:" + body);
+        /**
+         * 这里直接取出字符串
+         */
+        String body = (String) msg;
+        // 理论上来说ackCount也是100才对
+        System.out.println("当前时间是:" + body + ",客户端收到ACK的数量为:" + (++ackCount));
 
     }
 

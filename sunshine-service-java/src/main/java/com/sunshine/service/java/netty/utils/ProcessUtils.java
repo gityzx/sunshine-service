@@ -22,6 +22,11 @@ public class ProcessUtils {
         return (QUERY_TIME_ORDER.equalsIgnoreCase(reqBody)) ? (String.valueOf(System.currentTimeMillis())) : (BAD_ORDER);
     }
 
+    public static String process(String reqBody,int counter) {
+        System.out.println("[Server][服务器接受到的命令为:" + reqBody + "]--[当前计数器为:"+counter+"]");
+        return (QUERY_TIME_ORDER.equalsIgnoreCase(reqBody)) ? (String.valueOf(System.currentTimeMillis())) : (BAD_ORDER);
+    }
+
 
     /**
      * Object(内存)-->序列化成字节数组(内存)-->缓存区(内存)-->灌入到网络管道中
