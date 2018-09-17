@@ -1,6 +1,7 @@
-package com.sunshine.service.java.netty.ch04.sticklossOK;
+package com.sunshine.service.java.netty.ch05.delimiter;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -8,8 +9,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 import static com.sunshine.service.java.netty.utils.CloseUtils.close;
 import static com.sunshine.service.java.netty.utils.Constant.PORT;
@@ -23,25 +26,26 @@ public class Server {
 
 
     public ServerBootstrap initServerBootstrap(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
-        ServerBootstrap b = new ServerBootstrap();
+        ServerBootstrap server = new ServerBootstrap();
 
-        b.group(parentGroup, childGroup)
+        server.group(parentGroup, childGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 1024)
+                .handler(new LoggingHandler(LogLevel.INFO))//添加了日志的打印
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
 
                         /**
-                         * 按行切换的文本解码器,解决了tcp粘包和拆包的情况
+                         * 按行切换的文本解码器解决了tcp粘包和拆包的情况
                          */
                         ch.pipeline()
-                                .addLast(new LineBasedFrameDecoder(1024))
+                                .addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_".getBytes())))
                                 .addLast(new StringDecoder())
-                                .addLast(new StickylossOKServerHandler());
+                                .addLast(new DelimiterServerHandler());
                     }
                 });
-        return b;
+        return server;
 
     }
 

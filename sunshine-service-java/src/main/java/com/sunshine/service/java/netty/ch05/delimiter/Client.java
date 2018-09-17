@@ -1,7 +1,8 @@
-package com.sunshine.service.java.netty.ch04.sticklossOK;
+package com.sunshine.service.java.netty.ch05.delimiter;
 
 import com.sunshine.service.java.netty.utils.Constant;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -9,8 +10,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 import static com.sunshine.service.java.netty.utils.CloseUtils.close;
 
@@ -23,11 +26,12 @@ public class Client {
 
     public Bootstrap initBootstrap(EventLoopGroup reactor) {
         // 客户端辅助启动类
-        Bootstrap b = new Bootstrap();
-        b
+        Bootstrap client = new Bootstrap();
+        client
                 .group(reactor)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
+                .handler(new LoggingHandler(LogLevel.INFO))//添加了日志的打印
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
@@ -36,13 +40,13 @@ public class Client {
                          * 按行切换的文本解码器解决了tcp粘包和拆包的情况
                          */
                         ch.pipeline()
-                                .addLast(new LineBasedFrameDecoder(1024))
+                                .addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_".getBytes())))
                                 .addLast(new StringDecoder())
-                                .addLast(new StickylossOKClientHandler());
+                                .addLast(new DelimiterClientHandler());
                     }
                 });
 
-        return b;
+        return client;
     }
 
 
