@@ -1,0 +1,11 @@
+        <result property="id" column="id"/>
+        <result property="feedsId" column="feeds_id"/>
+        <result property="pariseNum" column="parise_num"/>
+        <result property="followNum" column="follow_num"/>
+        <result property="collectNum" column="collect_num"/>
+        <result property="wordsNum" column="words_num"/>
+        <result property="forwardNum" column="forward_num"/>
+        <result property="shareNum" column="share_num"/>
+        <result property="downloadNum" column="download_num"/>
+        <result property="reportNum" column="report_num"/>
+  
