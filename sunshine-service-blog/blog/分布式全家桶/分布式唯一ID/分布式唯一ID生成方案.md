@@ -3,4 +3,4 @@
 # 升级方案
 ![](美团分布式唯一ID方案.png)
 # 参考:
-https://msp.weixin.qq.com/s/HRJb8iBsXJTdsUhfhOxHlw
+https://mp.weixin.qq.com/s/HRJb8iBsXJTdsUhfhOxHlw
